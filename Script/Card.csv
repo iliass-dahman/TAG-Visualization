@@ -1,0 +1,7 @@
+﻿id_card,end_of_validity,id_client,type
+1,2023-01-01,1,month
+2,2023-01-01,2,month
+4,2023-01-07,4,month
+6,2023-01-07,6,year
+3,2023-01-02,3,year
+5,2023-01-08,5,month

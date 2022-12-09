@@ -1,0 +1,2 @@
+docker-compose up
+docker exec -it docker-pythonapp-1 bash
