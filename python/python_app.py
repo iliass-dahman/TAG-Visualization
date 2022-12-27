@@ -278,3 +278,19 @@ if __name__ == "__main__":
 
     print("updating top users who have used tram lines.........")
     top_line_user(session)
+
+
+
+# when executing the script
+#Statistics_1
+    #get the last date which for the data was processed
+        #if exists 
+            #get the last timestamp(t1) of processed data for the current date from statistics_1
+            #get all timestamps from event table which are greater than t1 for the current day --> process them 
+            #pass to the next day
+
+        #if doesn't exist
+            #process data from the begenning
+    #1.get all new records starting from the last record processed for that day
+    #2.process them all
+    #3.process the stream of records until stopping the scipt
