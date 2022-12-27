@@ -12,4 +12,4 @@ while True:
     validation = Validation(Client.random(), Card.random(), line.random_station(), line.id, line.random_station(),
                             datetime.now().isoformat())
     producer.send('temp-topic', bytes(validation.to_json(), encoding='utf-8'))
-    sleep(.1)
+    sleep(5)

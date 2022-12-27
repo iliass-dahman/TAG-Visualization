@@ -56,11 +56,11 @@ def save_new_record(session,record):
 
 
         
-        arrival_station = record["destinationStationId"]
+        arrival_station = str(record["destinationStationId"]).replace("'","")
         id_card = record["card"]["id"]
         id_user = record["client"]["id"]
         line = record["line"]
-        start_station = record["stationId"]
+        start_station = str(record["stationId"]).replace("'","")
         timestamp = record["requestTimeStamp"]
 
         session.execute(f"INSERT INTO event(id_event,end_station,id_card,id_user,line,start_station,timestamp)\
@@ -75,11 +75,11 @@ def save_new_record(session,record):
 
 
         
-        arrival_station = record["destinationStationId"]
+        arrival_station = str(record["destinationStationId"]).replace("'","")
         id_card = record["card"]["id"]
         id_user = record["client"]["id"]
         line = record["line"]
-        start_station = record["stationId"]
+        start_station = str(record["stationId"]).replace("'","")
         timestamp = record["requestTimeStamp"]
 
         session.execute(f"INSERT INTO event(id_event,end_station,id_card,id_user,line,start_station,timestamp)\
@@ -100,9 +100,12 @@ if __name__ == "__main__":
     consumer.subscribe(topics=["temp-topic"])
 
     print("receiving data............")
+    i=1
     for msg in consumer:
         record: Validation = json.loads(msg.value)
+        print(f"record {i}\n")
         save_new_record(session,record)
+        i+=1
         #id_event = v[""]
         #arrival_station = v["destinationStationId"]
         #id_card = v["card"]["id"]
