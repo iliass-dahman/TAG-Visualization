@@ -130,7 +130,7 @@ def statistics_1(session):
             #print(int(end_date))
             #print(date)
             #print(end_date)
-            users =  pd.DataFrame(list(session.execute(f"SELECT id_user,timestamp FROM Event where \
+            users =  pd.DataFrame(list(session.execute(f"SELECT id_user FROM Event where \
             timestamp >= '{date}' and  timestamp < '{end_date}' allow filtering;")))
             #print(users)
             
