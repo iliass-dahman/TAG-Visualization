@@ -1,4 +1,4 @@
-FROM cassandra:3
+FROM cassandra:4
 
 WORKDIR /var/lib/
 

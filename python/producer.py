@@ -5,7 +5,7 @@ from kafka import KafkaProducer
 
 from model import Validation, Client, Card, Lines
 
-producer = KafkaProducer(bootstrap_servers='localhost:9092')
+producer = KafkaProducer(bootstrap_servers='broker:9092')
 s = "hello"
 while True:
     line = Lines.random_line()

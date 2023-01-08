@@ -68,7 +68,7 @@ class Lines:
 
     @staticmethod
     def random_line():
-        choices = [.3, .25, .25, .1, .1]
+        choices = [.3, .4, .3]
         return random.choices(Lines.lines, weights=choices)[0]
 
 

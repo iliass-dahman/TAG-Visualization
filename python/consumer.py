@@ -89,14 +89,14 @@ def save_new_record(session,record):
 if __name__ == "__main__":
 
     print("connecting to cassandra cluster.........")
-    cluster = Cluster(["docker-cassandra-1"],port=9042)
+    cluster = Cluster(["tram-cassandra-1"],port=9042)
 
 
     #connect to the keyspace
     session = cluster.connect('test')
 
     print("connecting to kafka cluster.........")
-    consumer = KafkaConsumer(bootstrap_servers='localhost:9092')
+    consumer = KafkaConsumer(bootstrap_servers='broker:9092')
     consumer.subscribe(topics=["temp-topic"])
 
     print("receiving data............")
