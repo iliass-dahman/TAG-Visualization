@@ -2,11 +2,14 @@ FROM python:3.8
 
 RUN pip install cassandra-driver
 RUN pip install pandas
+RUN pip install -r requirements.txt
 
 
 WORKDIR /usr/app/src
 
-COPY python_app.py ./
+COPY *.* ./
+
+
 RUN ["apt-get", "update"]
 RUN ["apt-get", "install", "-y", "vim"]
 

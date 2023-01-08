@@ -32,6 +32,6 @@ echo "Writing sample data...";
 
 
 
-cqlsh cassandra -u cassandra -p cassandra -e "COPY test.Card FROM '/var/lib/Card.csv' WITH DELIMITER=',' AND HEADER=TRUE;";
-cqlsh cassandra -u cassandra -p cassandra -e "COPY test.Client FROM '/var/lib/Client.csv' WITH DELIMITER=',' AND HEADER=TRUE;";
-cqlsh cassandra -u cassandra -p cassandra -e "COPY test.Event FROM '/var/lib/Event.csv' WITH DELIMITER=',' AND HEADER=TRUE;";
+#cqlsh cassandra -u cassandra -p cassandra -e "COPY test.Card FROM '/var/lib/Card.csv' WITH DELIMITER=',' AND HEADER=TRUE;";
+#cqlsh cassandra -u cassandra -p cassandra -e "COPY test.Client FROM '/var/lib/Client.csv' WITH DELIMITER=',' AND HEADER=TRUE;";
+#cqlsh cassandra -u cassandra -p cassandra -e "COPY test.Event FROM '/var/lib/Event.csv' WITH DELIMITER=',' AND HEADER=TRUE;";

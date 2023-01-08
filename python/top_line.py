@@ -55,7 +55,7 @@ if __name__ == "__main__":
     
     print("Connecting to the Cluster..........")
     #connect to the cluster
-    cluster = Cluster(["127.0.0.1"],port=9042)
+    cluster = Cluster(["docker-cassandra-1"],port=9042)
 
 
     #connect to the keyspace

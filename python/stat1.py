@@ -18,8 +18,9 @@ import time
 def process_data_1(users_data,date,update):
 
 
-
+            
             users = users_data['id_user'].unique()
+            
             
             #get the old users 
 
@@ -28,6 +29,7 @@ def process_data_1(users_data,date,update):
 
             try:
                 old_users = old_users['id_user'].unique()
+                
             except:
                 old_users = []
 
@@ -51,21 +53,24 @@ def process_data_1(users_data,date,update):
                 elif(card_type == "Year"):
                     details['year'].append(user)
 
-            short_date = str(datetime.strptime(str(date), "%Y-%m-%d")).split(" ")[0]
+            date = str(date).split(" ")[0]
+            
+            #short_date = str(datetime.strptime(date, "%Y-%m-%d"))
             
 
             if(update==0):
                 
                 session.execute(f"INSERT INTO statistics_1(day, month_user, new_subs, year_user,LPRD)\
-                VALUES ('{short_date}', {len(details['month'])},{len(new_users)} ,{len(details['year'])},'{max(users_data.loc[:,'timestamp'])}');")
+                VALUES ('{date}', {len(details['month'])},{len(new_users)} ,{len(details['year'])},'{max(users_data.loc[:,'timestamp'])}');")
                 
             else:
-                NS=int(pd.DataFrame(list(session.execute(f'SELECT new_subs FROM statistics_1 where day=\'{short_date}\';')))['new_subs'][0]) + len(new_users)
-                MU=int(pd.DataFrame(list(session.execute(f'SELECT month_user FROM statistics_1 where day=\'{short_date}\';')))['month_user'][0]) + len(details['month'])
+                NS=int(pd.DataFrame(list(session.execute(f'SELECT new_subs FROM statistics_1 where day=\'{date}\';')))['new_subs'][0]) + len(new_users)
+                MU=int(pd.DataFrame(list(session.execute(f'SELECT month_user FROM statistics_1 where day=\'{date}\';')))['month_user'][0]) + len(details['month'])
                 YU=NS-MU
+                print(f"max --> {max(users_data.loc[:,'timestamp'])}")
                 session.execute(f"UPDATE statistics_1 SET \
-                    month_user ='{MU}' ,new_subs ={NS},year_user= {YU},LPRD='{users_data.loc[(users_data.shape[0]-1),'timestamp']}'\
-                        WHERE day = '{short_date}';")
+                    month_user ={MU} ,new_subs ={NS},year_user= {YU},LPRD='{max(users_data.loc[:,'timestamp'])}'\
+                        WHERE day = '{date}';")
             
             print("statisctics saved!")
 
@@ -92,7 +97,7 @@ def statistics_1(session):
         date_1 = datetime.strptime(last_day, "%Y-%m-%d")
         end_date = date_1 + timedelta(days=1)
 
-        data = pd.DataFrame(list(session.execute(f"SELECT id_user FROM Event where \
+        data = pd.DataFrame(list(session.execute(f"SELECT id_user,timestamp FROM Event where \
             timestamp > '{last_record_ts}' and  timestamp < '{end_date}' allow filtering;")))
 
         if(data.shape[0]>0):
@@ -168,11 +173,11 @@ def statistics_1(session):
                 
                 record_ts_1 = str(record_ts).split(" ")[0]
                 #check if record_ts has been already in statistics_1
-
-                date_1 =datetime.strptime(record_ts_1, "%Y-%m-%d").split(" ")[0]
+                print(record_ts_1)
+                #date_1 =datetime.strptime(record_ts_1, "%Y-%m-%d").split(" ")[0]
                 #end_date = str(date_1.date())
                 
-                ts_in_stat1 = pd.DataFrame(list(session.execute(f'SELECT day FROM "statistics_1" where day=\'{end_date}\' allow filtering;')))
+                ts_in_stat1 = pd.DataFrame(list(session.execute(f'SELECT day FROM "statistics_1" where day=\'{record_ts_1}\' allow filtering;')))
                 
                 if(len(ts_in_stat1.columns) == 0):
                     ts_in_stat1 = None
@@ -190,18 +195,18 @@ def statistics_1(session):
 
                     if(card_type == "Month"):
 
-                        NS=int(pd.DataFrame(list(session.execute(f'SELECT new_subs FROM "statistics_1 where day=\'{end_date}\';')))['new_subs'][0]) + 1
-                        MU=int(pd.DataFrame(list(session.execute(f'SELECT month_user FROM "statistics_1 where day=\'{end_date}\';')))['month_user'][0]) + 1
+                        NS=int(pd.DataFrame(list(session.execute(f'SELECT new_subs FROM statistics_1 where day=\'{record_ts_1}\';')))['new_subs'][0]) + 1
+                        MU=int(pd.DataFrame(list(session.execute(f'SELECT month_user FROM statistics_1 where day=\'{record_ts_1}\';')))['month_user'][0]) + 1
                         session.execute(f"UPDATE statistics_1 SET \
                         month_user ={MU} ,new_subs ={NS},LPRD='{record_ts}'\
-                            WHERE day = '{date_1}';")
+                            WHERE day = '{record_ts_1}';")
                         print(f"new record have been processed {record_ts}")
                     else:
-                        NS=int(pd.DataFrame(list(session.execute(f'SELECT new_subs FROM statistics_1 where day=\'{end_date}\';')))['new_subs'][0]) + 1
-                        YU=int(pd.DataFrame(list(session.execute(f'SELECT year_user FROM statistics_1 where day=\'{end_date}\';')))['year_user'][0]) + 1
+                        NS=int(pd.DataFrame(list(session.execute(f'SELECT new_subs FROM statistics_1 where day=\'{record_ts_1}\';')))['new_subs'][0]) + 1
+                        YU=int(pd.DataFrame(list(session.execute(f'SELECT year_user FROM statistics_1 where day=\'{record_ts_1}\';')))['year_user'][0]) + 1
                         session.execute(f"UPDATE statistics_1 SET \
                         new_subs ={NS},year_user= {YU},LPRD='{record_ts}'\
-                            WHERE day = '{date_1}';")   
+                            WHERE day = '{record_ts_1}';")   
                         print(f"new record have been processed {record_ts}")
                     
                 else:
@@ -209,11 +214,11 @@ def statistics_1(session):
                     if(card_type == "Month"):
 
                         session.execute(f"INSERT INTO statistics_1(day, month_user, new_subs, year_user,LPRD)\
-                VALUES ('{date_1}', 1,1 ,0,'{record_ts}');")
+                VALUES ('{record_ts_1}', 1,1 ,0,'{record_ts}');")
                         print(f"new record have been processed {record_ts}")
                     else:
                         session.execute(f"INSERT INTO statistics_1(day, month_user, new_subs, year_user,LPRD)\
-                VALUES ('{date_1}', 0,1 ,1,'{record_ts}');")
+                VALUES ('{record_ts_1}', 0,1 ,1,'{record_ts}');")
                         print(f"new record have been processed {record_ts}")
 
 
@@ -234,7 +239,7 @@ if __name__ == "__main__":
 
     print("Connecting to the Cluster..........")
     #connect to the cluster
-    cluster = Cluster(["127.0.0.1"],port=9042)
+    cluster = Cluster(["docker-cassandra-1"],port=9042)
 
 
     #connect to the keyspace
