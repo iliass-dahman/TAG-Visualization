@@ -10,7 +10,7 @@ from datetime import datetime
 from datetime import timedelta
 import pandas as pd
 import time
-
+from kafka import KafkaProducer
 
 
 
@@ -46,7 +46,7 @@ def update(data,index,A,B,C):
 
 
 
-def StreamingStat2(session):
+def StreamingStat2(session,producer):
     from_to = {"00":"01","01":"02","02":"03","03":"04","04":"05","05":"06","06":"07","07":"08","08":"09","09":"10","10":"11",
     "11":"12","12":"13","13":"14","14":"15","15":"16","16":"17","17":"18","18":"19","19":"20","20":"21","21":"22","22":"23","23":"00"}
     #Process Remaining data
@@ -111,6 +111,11 @@ def StreamingStat2(session):
                         session.execute(f"UPDATE statistics_2 SET \
                         tram_A ={line_A},tram_B= {line_B},tram_C={line_C},LPRD='{data.loc[i,'timestamp']}'\
                             WHERE id = {old_stats.loc[0,'id']};")
+                        
+                        to_send = {"day": last_day, "interval_start": from_0, "interval_stop": from_to[from_0], "tram_A":
+                         [str(line_A)], "tram_B": [str(line_B)], "tram_C": [str(line_C)]}
+
+                        producer.send('frequented_tram', bytes(str(to_send), encoding='utf-8'))
 
                         del line_A
                         del line_B
@@ -126,7 +131,12 @@ def StreamingStat2(session):
                         session.execute(f"UPDATE statistics_2 SET \
                         tram_A ={line_A},tram_B= {line_B},tram_C={line_C},LPRD='{data.loc[i,'timestamp']}'\
                             WHERE id = {old_stats.loc[0,'id']};")
-                        
+
+                        to_send = {"day": last_day, "interval_start": from_0, "interval_stop": from_to[from_0], "tram_A":
+                         [str(line_A)], "tram_B": [str(line_B)], "tram_C": [str(line_C)]}
+
+                        producer.send('frequented_tram', bytes(str(to_send), encoding='utf-8'))      
+
                         del line_A
                         del line_B
                         del line_C
@@ -158,6 +168,11 @@ def StreamingStat2(session):
                                     session.execute(f"INSERT INTO statistics_2(id,day,to_,from_,tram_A ,tram_B ,tram_C,LPRD )\
             VALUES ({j}, '{last_day}','{from_to[from_0]}','{from_0}',{line_A},{line_B},{line_C},'{data.loc[i,'timestamp']}');")
 
+                                    to_send = {"day": last_day, "interval_start": from_0, "interval_stop": from_to[from_0], "tram_A":
+                         [str(line_A)], "tram_B": [str(line_B)], "tram_C": [str(line_C)]}
+
+                                    producer.send('frequented_tram', bytes(str(to_send), encoding='utf-8'))     
+
                                     j+=1 
                             
                                                      
@@ -168,12 +183,19 @@ def StreamingStat2(session):
 
                             session.execute(f"INSERT INTO statistics_2(id,day,to_,from_,tram_A ,tram_B ,tram_C,LPRD )\
             VALUES ({j}, '{last_day}','{from_to[from_0]}','{from_0}',{line_A},{line_B},{line_C},'{data.loc[i-1,'timestamp']}');")
+
+
+                            to_send = {"day": last_day, "interval_start": from_0, "interval_stop": from_to[from_0], "tram_A":
+                         [str(line_A)], "tram_B": [str(line_B)], "tram_C": [str(line_C)]}
+
+                            producer.send('frequented_tram', bytes(str(to_send), encoding='utf-8'))     
                             
                             j+=1 
 
                             del line_A
                             del line_B
                             del line_C
+
                             line_A = {"users":0}
                             line_B = {"users":0}
                             line_C = {"users":0}
@@ -214,6 +236,12 @@ def StreamingStat2(session):
 
                                     session.execute(f"INSERT INTO statistics_2(id,day,to_,from_,tram_A ,tram_B ,tram_C,LPRD )\
             VALUES ({j}, '{last_day}','{from_to[from_0]}','{from_0}',{line_A},{line_B},{line_C},'{data.loc[i,'timestamp']}');")
+
+                                    to_send = {"day": last_day, "interval_start": from_0, "interval_stop": from_to[from_0], "tram_A":
+                         [str(line_A)], "tram_B": [str(line_B)], "tram_C": [str(line_C)]}
+
+                                    producer.send('frequented_tram', bytes(str(to_send), encoding='utf-8'))     
+
                                     j+=1
                                                      
                                 i+=1
@@ -222,6 +250,11 @@ def StreamingStat2(session):
                             session.execute(f"INSERT INTO statistics_2(id,day,to_,from_,tram_A ,tram_B ,tram_C,LPRD )\
             VALUES ({j}, '{last_day}','{from_to[from_0]}','{from_0}',{line_A},{line_B},{line_C},'{data.loc[i-1,'timestamp']}');") 
                             
+                            to_send = {"day": last_day, "interval_start": from_0, "interval_stop": from_to[from_0], "tram_A":
+                         [str(line_A)], "tram_B": [str(line_B)], "tram_C": [str(line_C)]}
+
+                            producer.send('frequented_tram', bytes(str(to_send), encoding='utf-8'))     
+
                             j+=1
 
                             del line_A
@@ -296,6 +329,11 @@ def StreamingStat2(session):
                             session.execute(f"INSERT INTO statistics_2(id,day,to_,from_,tram_A ,tram_B ,tram_C,LPRD )\
             VALUES ({j}, '{date}','{from_to[from_0]}','{from_0}',{line_A},{line_B},{line_C},'{data.loc[i,'timestamp']}');")
 
+                            to_send = {"day": date, "interval_start": from_0, "interval_stop": from_to[from_0], "tram_A":
+                         [str(line_A)], "tram_B": [str(line_B)], "tram_C": [str(line_C)]}
+
+                            producer.send('frequented_tram', bytes(str(to_send), encoding='utf-8'))     
+
                             j=j+1   
                                                      
                         i = i + 1
@@ -305,6 +343,11 @@ def StreamingStat2(session):
                         print(f"saving data for id: {j}, date: {date}, from={from_0}")
                         session.execute(f"INSERT INTO statistics_2(id,day,to_,from_,tram_A ,tram_B ,tram_C,LPRD )\
             VALUES ({j}, '{date}','{from_to[from_0]}','{from_0}',{line_A},{line_B},{line_C},'{data.loc[i-1,'timestamp']}');") 
+
+                        to_send = {"day": date, "interval_start": from_0, "interval_stop": from_to[from_0], "tram_A":
+                         [str(line_A)], "tram_B": [str(line_B)], "tram_C": [str(line_C)]}
+
+                        producer.send('frequented_tram', bytes(str(to_send), encoding='utf-8')) 
                         
                         j=j+1
 
@@ -401,6 +444,11 @@ def StreamingStat2(session):
                             tram_A ={line_A},tram_B= {line_B},tram_C={line_C},LPRD='{tmp_data.loc[i-1,'timestamp']}'\
                                 WHERE id = {old_stats.loc[0,'id']};")
 
+                            to_send = {"day": date, "interval_start": from_0, "interval_stop": from_to[from_0], "tram_A":
+                         [str(line_A)], "tram_B": [str(line_B)], "tram_C": [str(line_C)]}
+
+                            producer.send('frequented_tram', bytes(str(to_send), encoding='utf-8')) 
+
                             del line_A
                             del line_B
                             del line_C
@@ -416,6 +464,11 @@ def StreamingStat2(session):
                             session.execute(f"UPDATE statistics_2 SET \
                             tram_A ={line_A},tram_B= {line_B},tram_C={line_C},LPRD='{tmp_data.loc[i,'timestamp']}'\
                                 WHERE id = {old_stats.loc[0,'id']};")
+
+                            to_send = {"day": date, "interval_start": from_0, "interval_stop": from_to[from_0], "tram_A":
+                         [str(line_A)], "tram_B": [str(line_B)], "tram_C": [str(line_C)]}
+
+                            producer.send('frequented_tram', bytes(str(to_send), encoding='utf-8')) 
                             
                             del line_A
                             del line_B
@@ -453,6 +506,12 @@ def StreamingStat2(session):
                                         session.execute(f"INSERT INTO statistics_2(id,day,to_,from_,tram_A ,tram_B ,tram_C,LPRD )\
                 VALUES ({j}, '{date}','{from_to[from_0]}','{from_0}',{line_A},{line_B},{line_C},'{tmp_data.loc[i,'timestamp']}');")
 
+
+                                        to_send = {"day": date, "interval_start": from_0, "interval_stop": from_to[from_0], "tram_A":
+                         [str(line_A)], "tram_B": [str(line_B)], "tram_C": [str(line_C)]}
+
+                                        producer.send('frequented_tram', bytes(str(to_send), encoding='utf-8')) 
+
                                         j+=1  
                                                         
                                     i+=1
@@ -463,6 +522,12 @@ def StreamingStat2(session):
                                 session.execute(f"INSERT INTO statistics_2(id,day,to_,from_,tram_A ,tram_B ,tram_C,LPRD )\
                 VALUES ({j}, '{date}','{from_to[from_0]}','{from_0}',{line_A},{line_B},{line_C},'{tmp_data.loc[i-1,'timestamp']}');") 
                                 
+                                to_send = {"day": date, "interval_start": from_0, "interval_stop": from_to[from_0], "tram_A":
+                         [str(line_A)], "tram_B": [str(line_B)], "tram_C": [str(line_C)]}
+
+                                producer.send('frequented_tram', bytes(str(to_send), encoding='utf-8')) 
+
+
                                 j+=1
 
 
@@ -511,6 +576,14 @@ def StreamingStat2(session):
 
                                     session.execute(f"INSERT INTO statistics_2(id,day,to_,from_,tram_A ,tram_B ,tram_C,LPRD )\
             VALUES ({j}, '{date}','{from_to[from_0]}','{from_0}',{line_A},{line_B},{line_C},'{tmp_data.loc[i,'timestamp']}');")
+
+
+                                    to_send = {"day": date, "interval_start": from_0, "interval_stop": from_to[from_0], "tram_A":
+                         [str(line_A)], "tram_B": [str(line_B)], "tram_C": [str(line_C)]}
+
+                                    producer.send('frequented_tram', bytes(str(to_send), encoding='utf-8')) 
+
+
                                     j+=1
                                                      
                                 i+=1
@@ -518,6 +591,14 @@ def StreamingStat2(session):
                         else:
                             session.execute(f"INSERT INTO statistics_2(id,day,to_,from_,tram_A ,tram_B ,tram_C,LPRD )\
             VALUES ({j}, '{date}','{from_to[from_0]}','{from_0}',{line_A},{line_B},{line_C},'{tmp_data.loc[i-1,'timestamp']}');") 
+
+
+                            to_send = {"day": date, "interval_start": from_0, "interval_stop": from_to[from_0], "tram_A":
+                         [str(line_A)], "tram_B": [str(line_B)], "tram_C": [str(line_C)]}
+
+                            producer.send('frequented_tram', bytes(str(to_send), encoding='utf-8')) 
+
+
                             j+=1
 
 
@@ -558,6 +639,9 @@ if __name__ == "__main__":
     #connect to the keyspace
     session = cluster.connect('test')
 
+    #connect to kafka 
+    producer = KafkaProducer(bootstrap_servers='broker:9092')
+
     print("generating type 2 statictics.........")
 
-    StreamingStat2(session)
+    StreamingStat2(session,producer)

@@ -1,13 +1,19 @@
 version: '3'
 
 services:
-  pythonapp:
+  producer:
     tty: true
-    build: ./python/
-    command: sh -c "./run_files.sh"
+    build: ./python/producer/
+    command: sh -c "./run_producer.sh"
     depends_on:
-      - broker
-    
+      - broker 
+
+  consumer:
+    tty: true
+    build: ./python/consumer/
+    command: sh -c "./run_consumer.sh"
+    depends_on:
+      - broker    
 
   cassandra:
     tty: true

@@ -12,7 +12,7 @@ from datetime import datetime
 from datetime import timedelta
 import pandas as pd
 import time
-
+from kafka import KafkaProducer
 
 
 def process_data_1(users_data,date,update):
@@ -26,6 +26,8 @@ def process_data_1(users_data,date,update):
 
             old_users =  pd.DataFrame(list(session.execute(f"SELECT id_user FROM Event \
             where timestamp < '{date}' ALLOW FILTERING;")))
+
+
 
             try:
                 old_users = old_users['id_user'].unique()
@@ -63,6 +65,13 @@ def process_data_1(users_data,date,update):
                 session.execute(f"INSERT INTO statistics_1(day, month_user, new_subs, year_user,LPRD)\
                 VALUES ('{date}', {len(details['month'])},{len(new_users)} ,{len(details['year'])},'{max(users_data.loc[:,'timestamp'])}');")
                 
+                to_send = {"day":date, "new_subscibers":[{"number":len(new_users),"monthly":len(details['month'])
+                ,"year":len(details['year'])}]}
+
+                producer.send('new_subs', bytes(str(to_send), encoding='utf-8'))
+
+
+
             else:
                 NS=int(pd.DataFrame(list(session.execute(f'SELECT new_subs FROM statistics_1 where day=\'{date}\';')))['new_subs'][0]) + len(new_users)
                 MU=int(pd.DataFrame(list(session.execute(f'SELECT month_user FROM statistics_1 where day=\'{date}\';')))['month_user'][0]) + len(details['month'])
@@ -71,12 +80,17 @@ def process_data_1(users_data,date,update):
                 session.execute(f"UPDATE statistics_1 SET \
                     month_user ={MU} ,new_subs ={NS},year_user= {YU},LPRD='{max(users_data.loc[:,'timestamp'])}'\
                         WHERE day = '{date}';")
+                
+                to_send = {"day":date, "new_subscibers":[{"number":NS,"monthly":MU
+                ,"year":YU}]}
+
+                producer.send('new_subs', bytes(str(to_send), encoding='utf-8'))
             
             print("statisctics saved!")
 
 
 
-def statistics_1(session):
+def statistics_1(session,producer):
     #get the max date for which data was processed
     
     last_day = pd.DataFrame(list(session.execute('SELECT max(day) as last_day FROM "statistics_1";')))['last_day'][0]
@@ -99,6 +113,10 @@ def statistics_1(session):
 
         data = pd.DataFrame(list(session.execute(f"SELECT id_user,timestamp FROM Event where \
             timestamp > '{last_record_ts}' and  timestamp < '{end_date}' allow filtering;")))
+
+        
+
+
 
         if(data.shape[0]>0):
             process_data_1(data,date=last_record_ts,update=1)
@@ -201,12 +219,26 @@ def statistics_1(session):
                         month_user ={MU} ,new_subs ={NS},LPRD='{record_ts}'\
                             WHERE day = '{record_ts_1}';")
                         print(f"new record have been processed {record_ts}")
+                        to_send = {"day":record_ts_1, "new_subscibers":[{"number":NS,"monthly":MU
+                ,"year":(NS-MU)}]}
+
+                        producer.send('new_subs', bytes(str(to_send), encoding='utf-8'))
                     else:
                         NS=int(pd.DataFrame(list(session.execute(f'SELECT new_subs FROM statistics_1 where day=\'{record_ts_1}\';')))['new_subs'][0]) + 1
                         YU=int(pd.DataFrame(list(session.execute(f'SELECT year_user FROM statistics_1 where day=\'{record_ts_1}\';')))['year_user'][0]) + 1
                         session.execute(f"UPDATE statistics_1 SET \
                         new_subs ={NS},year_user= {YU},LPRD='{record_ts}'\
-                            WHERE day = '{record_ts_1}';")   
+                            WHERE day = '{record_ts_1}';")
+
+                        
+                        to_send = {"day":record_ts_1, "new_subscibers":[{"number":NS,"monthly":(NS-YU)
+                ,"year":YU}]}
+
+
+                        producer.send('new_subs', bytes(str(to_send), encoding='utf-8'))
+
+
+
                         print(f"new record have been processed {record_ts}")
                     
                 else:
@@ -215,10 +247,20 @@ def statistics_1(session):
 
                         session.execute(f"INSERT INTO statistics_1(day, month_user, new_subs, year_user,LPRD)\
                 VALUES ('{record_ts_1}', 1,1 ,0,'{record_ts}');")
+                        to_send = {"day":record_ts_1, "new_subscibers":[{"number":1,"monthly":1
+                ,"year":0}]}
+
+                        producer.send('new_subs', bytes(str(to_send), encoding='utf-8'))
                         print(f"new record have been processed {record_ts}")
                     else:
                         session.execute(f"INSERT INTO statistics_1(day, month_user, new_subs, year_user,LPRD)\
                 VALUES ('{record_ts_1}', 0,1 ,1,'{record_ts}');")
+
+                        to_send = {"day":record_ts_1, "new_subscibers":[{"number":1,"monthly":0
+                ,"year":1}]}
+
+                        producer.send('new_subs', bytes(str(to_send), encoding='utf-8'))
+
                         print(f"new record have been processed {record_ts}")
 
 
@@ -245,9 +287,12 @@ if __name__ == "__main__":
     #connect to the keyspace
     session = cluster.connect('test')
 
+    #connect to kafka 
+    producer = KafkaProducer(bootstrap_servers='broker:9092')
+
     print("generating type 1 statictics.........")
 
-    statistics_1(session)
+    statistics_1(session,producer)
 
 
 
