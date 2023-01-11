@@ -16,6 +16,7 @@ services:
     container_name: consumer
     depends_on:
       - broker
+      - cassandra
 
   app:
     tty: true
@@ -26,8 +27,7 @@ services:
       - "8000:8000"
     depends_on:
       - broker
-      - consumer
-      - producer
+      - cassandra
 
   cassandra:
     tty: true
