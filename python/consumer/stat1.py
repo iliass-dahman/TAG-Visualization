@@ -65,7 +65,7 @@ def process_data_1(users_data,date,update):
                 session.execute(f"INSERT INTO statistics_1(day, month_user, new_subs, year_user,LPRD)\
                 VALUES ('{date}', {len(details['month'])},{len(new_users)} ,{len(details['year'])},'{max(users_data.loc[:,'timestamp'])}');")
                 
-                to_send = {"day":date, "new_subscibers":[{"number":len(new_users),"monthly":len(details['month'])
+                to_send = {"day":date, "new_subscribers":[{"number":len(new_users),"monthly":len(details['month'])
                 ,"year":len(details['year'])}]}
 
                 producer.send('new_subs', bytes(str(to_send), encoding='utf-8'))
@@ -81,7 +81,7 @@ def process_data_1(users_data,date,update):
                     month_user ={MU} ,new_subs ={NS},year_user= {YU},LPRD='{max(users_data.loc[:,'timestamp'])}'\
                         WHERE day = '{date}';")
                 
-                to_send = {"day":date, "new_subscibers":[{"number":NS,"monthly":MU
+                to_send = {"day":date, "new_subscribers":[{"number":NS,"monthly":MU
                 ,"year":YU}]}
 
                 producer.send('new_subs', bytes(str(to_send), encoding='utf-8'))
@@ -219,7 +219,7 @@ def statistics_1(session,producer):
                         month_user ={MU} ,new_subs ={NS},LPRD='{record_ts}'\
                             WHERE day = '{record_ts_1}';")
                         print(f"new record have been processed {record_ts}")
-                        to_send = {"day":record_ts_1, "new_subscibers":[{"number":NS,"monthly":MU
+                        to_send = {"day":record_ts_1, "new_subscribers":[{"number":NS,"monthly":MU
                 ,"year":(NS-MU)}]}
 
                         producer.send('new_subs', bytes(str(to_send), encoding='utf-8'))
@@ -231,7 +231,7 @@ def statistics_1(session,producer):
                             WHERE day = '{record_ts_1}';")
 
                         
-                        to_send = {"day":record_ts_1, "new_subscibers":[{"number":NS,"monthly":(NS-YU)
+                        to_send = {"day":record_ts_1, "new_subscribers":[{"number":NS,"monthly":(NS-YU)
                 ,"year":YU}]}
 
 
@@ -247,7 +247,7 @@ def statistics_1(session,producer):
 
                         session.execute(f"INSERT INTO statistics_1(day, month_user, new_subs, year_user,LPRD)\
                 VALUES ('{record_ts_1}', 1,1 ,0,'{record_ts}');")
-                        to_send = {"day":record_ts_1, "new_subscibers":[{"number":1,"monthly":1
+                        to_send = {"day":record_ts_1, "new_subscribers":[{"number":1,"monthly":1
                 ,"year":0}]}
 
                         producer.send('new_subs', bytes(str(to_send), encoding='utf-8'))
@@ -256,7 +256,7 @@ def statistics_1(session,producer):
                         session.execute(f"INSERT INTO statistics_1(day, month_user, new_subs, year_user,LPRD)\
                 VALUES ('{record_ts_1}', 0,1 ,1,'{record_ts}');")
 
-                        to_send = {"day":record_ts_1, "new_subscibers":[{"number":1,"monthly":0
+                        to_send = {"day":record_ts_1, "new_subscribers":[{"number":1,"monthly":0
                 ,"year":1}]}
 
                         producer.send('new_subs', bytes(str(to_send), encoding='utf-8'))
@@ -281,7 +281,7 @@ if __name__ == "__main__":
 
     print("Connecting to the Cluster..........")
     #connect to the cluster
-    cluster = Cluster(["tram-cassandra-1"],port=9042)
+    cluster = Cluster(["cassandra"],port=9042)
 
 
     #connect to the keyspace

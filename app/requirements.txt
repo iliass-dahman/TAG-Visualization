@@ -1,0 +1,5 @@
+cassandra_driver==3.25.0
+confluent_kafka==1.9.2
+fastapi==0.89.0
+uvicorn==0.20.0
+jinja2==3.0.3

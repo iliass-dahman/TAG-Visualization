@@ -89,7 +89,7 @@ def save_new_record(session,record):
 if __name__ == "__main__":
 
     print("connecting to cassandra cluster.........")
-    cluster = Cluster(["tram-cassandra-1"],port=9042)
+    cluster = Cluster(["cassandra"],port=9042)
 
 
     #connect to the keyspace

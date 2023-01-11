@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>SDTD Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="{{ url_for('static', path='/style.css') }}" rel="stylesheet">
+    
+  </head>
+  <body>
+    <div class="chart-container">
+      <div class="chart-box">
+        <div class="chart-title">New subscriptions</div>
+        <input type="button" id="subsNowInput" value="Live" onclick="getNewSubs(true)" />
+        <input type="button" id="subsPastInput" value="The past 10 days" onclick="getNewSubs(false)" />
+        <canvas id="new-subs"></canvas>
+      </div>
+
+      <div class="daterange daterange--single"></div>
+
+      <div class="chart-box">
+        <div class="chart-title">Frequented tramways</div>
+        <input type="button" id="trajNowInput" value="Live" onclick="getTrajData(true)" />
+        <input type="button" id="trajPastInput" value="The past 10 days" onclick="getTrajData(false)" />
+        <canvas id="frequented-trams"></canvas>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title">Users per stations</div>
+        <input type="button" id="stationNowInput" value="Live" onclick="getStationData(true)" />
+        <input type="button" id="stationPastInput" value="The past 10 days" onclick="getStationData(false)" />
+          <select name="stations" id="stations" onchange="clear()" >
+            {% for station in stations %}
+              <option value="{{ station }}">{{ station }}</option>
+            {% endfor %}
+          </select>
+
+        <canvas id="frequented-stations"></canvas>
+      </div>
+    </div>
+    <script src="{{ url_for('static', path='/script.js') }}"></script>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+kafka_url = 'broker:9092'
+kafka_subs_topic = 'new_subs'
+kafka_usage_topic = 'frequented_tram'
+cassandra_url = 'cassandra'
+cassandra_keyspace = 'test'

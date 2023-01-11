@@ -5,19 +5,34 @@ services:
     tty: true
     build: ./python/producer/
     command: sh -c "./run_producer.sh"
+    container_name: producer
     depends_on:
-      - broker 
+      - broker
 
   consumer:
     tty: true
     build: ./python/consumer/
     command: sh -c "./run_consumer.sh"
+    container_name: consumer
     depends_on:
-      - broker    
+      - broker
+
+  app:
+    tty: true
+    build: ./app/
+    command: sh -c "python service.py"
+    container_name: app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - broker
+      - consumer
+      - producer
 
   cassandra:
     tty: true
     build: ./cassandra/
+    container_name: cassandra
     ports:
       - "9042:9042"
     volumes:
@@ -26,6 +41,7 @@ services:
   sample-data:
     tty: true
     build: ./Script/
+    container_name: sample-data
     depends_on:
       - cassandra
     restart: "no"
@@ -57,3 +73,4 @@ services:
                   KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
                   KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
                   KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+

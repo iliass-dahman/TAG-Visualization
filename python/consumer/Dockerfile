@@ -9,6 +9,9 @@ WORKDIR /usr/app/src
 
 COPY *.* ./
 
+# add execution permission to ./run_consumer.sh
+RUN chmod +x ./run_consumer.sh
+
 RUN pip install -r requirements.txt
 
 RUN ["apt-get", "update"]
