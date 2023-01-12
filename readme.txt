@@ -1,1 +1,0 @@
-to run the demo, run the command: docker-compose up in your terminal

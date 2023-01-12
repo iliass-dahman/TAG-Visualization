@@ -124,11 +124,13 @@ def load_new_subs():
     return { 'axis': days, 'monthlyUsers': monthlyUsers, 'yearlyUsers': yearlyUsers }
 
 def load_new_subs_now() :
+    today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
     hour = datetime.now().strftime("%H:%M:%S")
     monthlyUsers = 0
     yearlyUsers = 0
 
     result = NewSubs.objects.allow_filtering().filter(
+        date=datetime.strptime(today.strftime("%m/%d/%Y %I:%M %p"), "%m/%d/%Y %I:%M %p"),
         read=False)
     
     max = 0
@@ -191,12 +193,14 @@ def load_trajets_usage():
 
 
 def load_trajets_usage_now():
+    today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
     hour = datetime.now().strftime("%H:%M:%S")
     tramA = 0
     tramB = 0
     tramC = 0
 
     result = Trajet.objects.allow_filtering().filter(
+        day=datetime.strptime(today.strftime("%m/%d/%Y %I:%M %p"), "%m/%d/%Y %I:%M %p"),
         read=False)
 
     for record in result:
@@ -241,10 +245,12 @@ def load_station_usage(stationName):
     return { 'axis': days, 'users': users }
 
 def load_station_usage_now(station):
+    today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
     hour = datetime.now().strftime("%H:%M:%S")
     users = 0
     
     result = Station.objects.allow_filtering().filter(
+        day=datetime.strptime(today.strftime("%m/%d/%Y %I:%M %p"), "%m/%d/%Y %I:%M %p"),
         read=False,
         name=station
         )

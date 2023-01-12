@@ -1,2 +1,2 @@
-sleep 120s 
+sleep 100s 
 python3 ./producer.py 

@@ -21,7 +21,7 @@ services:
   app:
     tty: true
     build: ./app/
-    command: sh -c "python service.py"
+    command:  sh -c "sleep 130; python service.py"
     container_name: app
     ports:
       - "8000:8000"
