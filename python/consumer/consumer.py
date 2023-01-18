@@ -1,5 +1,6 @@
 import json
 from time import sleep
+import time
 
 from kafka import KafkaConsumer
 
@@ -17,8 +18,16 @@ import numpy as np
 # function which checks whether it's a new client or not
 def is_new_client(session,id_client):
     #check if the received id exists in clients table
-    user =  pd.DataFrame(list(session.execute(f"SELECT id_client FROM client where \
+    user = None
+    while True:
+        try:
+            user =  pd.DataFrame(list(session.execute(f"SELECT id_client FROM client where \
             id_client = '{id_client}' allow filtering;")))
+            break
+        except:
+            print("Connection to the cluster failed, retrying in 5 seconds")
+            time.sleep(5)
+    
     if( user.shape[0] == 0):
         return True
     else:
@@ -88,15 +97,30 @@ def save_new_record(session,record):
 
 if __name__ == "__main__":
 
-    print("connecting to cassandra cluster.........")
-    cluster = Cluster(["cassandra"],port=9042)
+    cluster = None
+    session = None
+    while True:
+        try:
+            print("Connecting to the Cluster..........")
+            cluster = Cluster(["cassandra"],port=9042)
+            session = cluster.connect('test')
+            break
+        except:
+            print("Connection to the cluster failed, retrying in 5 seconds")
+            time.sleep(5)
 
-
-    #connect to the keyspace
-    session = cluster.connect('test')
+    
 
     print("connecting to kafka cluster.........")
-    consumer = KafkaConsumer(bootstrap_servers='broker:9092')
+    consumer = None
+    while True:
+        try:
+            consumer = KafkaConsumer(bootstrap_servers='broker:9092')
+            break
+        except:
+            print("Connection to the kafka cluster failed, retrying in 5 seconds")
+            time.sleep(5)
+    
     consumer.subscribe(topics=["temp-topic"])
 
     print("receiving data............")

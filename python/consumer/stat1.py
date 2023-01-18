@@ -279,19 +279,30 @@ def statistics_1(session,producer):
 
 if __name__ == "__main__":
 
-    print("Connecting to the Cluster..........")
-    #connect to the cluster
-    cluster = Cluster(["cassandra"],port=9042)
-
-
-    #connect to the keyspace
+    cluster = None
+    while True:
+        try:
+            print("Connecting to the Cluster..........")
+            cluster = Cluster(["cassandra"],port=9042)
+            break
+        except:
+            print("Connection to the cluster failed, retrying in 5 seconds")
+            time.sleep(5)
+    
     session = cluster.connect('test')
-
-    #connect to kafka 
-    producer = KafkaProducer(bootstrap_servers='broker:9092')
+    producer = None
+    
+    while True:
+        try:
+            print("Connecting to the Kafka..........")
+            producer = KafkaProducer(bootstrap_servers='broker:9092')
+            break
+        except:
+            print("Connection to the Kafka failed, retrying in 5 seconds")
+            time.sleep(5)
 
     print("generating type 1 statictics.........")
-
+    print(str(session.cluster)+"\n"+str(producer.bootstrap_connected())+"\n" )
     statistics_1(session,producer)
 
 

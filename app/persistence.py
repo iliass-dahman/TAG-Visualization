@@ -4,16 +4,25 @@ from cassandra.cqlengine.management import sync_table
 from models import NewSubs, Trajet, Station
 from datetime import datetime, timedelta
 import config
+import time
 
 
 def setup_db():
-    connection.setup([config.cassandra_url], config.cassandra_keyspace, protocol_version=3)
-    sync_table(NewSubs)
-    sync_table(Trajet)
-    sync_table(Station)
+    while True:
+        try:
+            connection.setup([config.cassandra_url], config.cassandra_keyspace, protocol_version=3)
+            sync_table(NewSubs)
+            sync_table(Trajet)
+            sync_table(Station)
+            break
+        except Exception as e:
+            print(e)
+            print("Waiting for Cassandra to start...")
+            time.sleep(5)
+    
 
 def save_to_db(table, data):
-    
+
     if table == 'new_subs':
         day=datetime.strptime(data['day'] , "%Y-%m-%d")
         NewSubs.create(

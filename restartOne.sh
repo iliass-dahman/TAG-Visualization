@@ -1,0 +1,1 @@
+# docker stop container in first argument
