@@ -3,6 +3,7 @@ version: '3'
 services:
   producer:
     tty: true
+    image: yeyloo/producer-sdtd
     build: ./python/producer/
     command: sh -c "./run_producer.sh"
     container_name: producer
@@ -11,6 +12,7 @@ services:
 
   consumer:
     tty: true
+    image: yeyloo/consumer-sdtd
     build: ./python/consumer/
     command: sh -c "./run_consumer.sh"
     container_name: consumer
@@ -20,17 +22,24 @@ services:
 
   app:
     tty: true
+    image: yeyloo/app-sdtd
     build: ./app/
-    command:  sh -c "sleep 130; python service.py"
+    command: sh -c "sleep 130; python service.py"
     container_name: app
     ports:
       - "8000:8000"
     depends_on:
       - broker
       - cassandra
+    labels:
+      kompose.service.type: LoadBalancer
+      kompose.service.expose: "tagawsome.com"
+      kompose.service.expose.tls-secret: "atay-secret"
+      kompose.service.expose.ingress-class-name: "nginx"
 
   cassandra:
     tty: true
+    image: yeyloo/cassandra-sdtd
     build: ./cassandra/
     container_name: cassandra
     ports:
@@ -38,39 +47,42 @@ services:
     volumes:
       - /var/lib/cassandra
 
-  sample-data:
-    tty: true
-    build: ./Script/
-    container_name: sample-data
-    depends_on:
-      - cassandra
-    restart: "no"
-    entrypoint: ["/script.sh"]
-    volumes:
-      - ./script.sh:/script.sh
+  # sample-data:
+  #   tty: true
+  #   image: yeyloo/sample-data-sdtd
+  #   build: ./Script/
+  #   container_name: sample-data
+  #   depends_on:
+  #     - cassandra
+  #   restart: "no"
+  #   command:  sh -c "~/script.sh"
+  #    entrypoint: ["/script.sh"]
+  #    volumes:
+  #      - ./script.sh:/script.sh
 
   zookeeper:
-            image: confluentinc/cp-zookeeper:7.0.1
-            container_name: zookeeper
-            environment:
-                  ZOOKEEPER_CLIENT_PORT: 2181
-                  ZOOKEEPER_TICK_TIME: 2000
+    image: confluentinc/cp-zookeeper:7.0.1
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
 
   broker:
-            image: confluentinc/cp-kafka:7.0.1
-            container_name: broker
-            ports:
-                  # To learn about configuring Kafka for access across networks see
-                  # https://www.confluent.io/blog/kafka-client-cannot-connect-to-broker-on-aws-on-docker-etc/
-                  - "9092:9092"
-            depends_on:
-                  - zookeeper
-            environment:
-                  KAFKA_BROKER_ID: 1
-                  KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-                  KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-                  KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092,PLAINTEXT_INTERNAL://broker:29092
-                  KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-                  KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-                  KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-
+    image: confluentinc/cp-kafka:7.0.1
+    container_name: broker
+    ports:
+      # To learn about configuring Kafka for access across networks see
+      # https://www.confluent.io/blog/kafka-client-cannot-connect-to-broker-on-aws-on-docker-etc/
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper.default.svc.cluster.local:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker.default.svc.cluster.local:9092,PLAINTEXT_INTERNAL://broker.default.svc.cluster.local:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
