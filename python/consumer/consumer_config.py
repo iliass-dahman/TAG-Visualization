@@ -1,6 +1,5 @@
 import os
 
-
 KAFKA_URL = os.getenv('BROKER_NAME') + ":" + os.getenv('BROKER_PORT')
 KAFKA_SUBS_TOPIC = os.getenv('BROKER_SUBSCRIPTION_TOPIC')
 KAFKA_USAGE_TOPIC = os.getenv('BROKER_USAGE_TOPIC')
