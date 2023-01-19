@@ -2,6 +2,9 @@ from cassandra.cluster import Cluster
 import pandas as pd
 import math
 import warnings
+
+from consumer_config import KAFKA_URL, CASSANDRA_PORT, CASSANDRA_SERVICE_NAME
+
 warnings.filterwarnings('ignore')
 
 
@@ -283,7 +286,7 @@ if __name__ == "__main__":
     while True:
         try:
             print("Connecting to the Cluster..........")
-            cluster = Cluster(["cassandra"],port=9042)
+            cluster = Cluster([CASSANDRA_SERVICE_NAME],port=CASSANDRA_PORT)
             break
         except:
             print("Connection to the cluster failed, retrying in 5 seconds")
@@ -295,7 +298,7 @@ if __name__ == "__main__":
     while True:
         try:
             print("Connecting to the Kafka..........")
-            producer = KafkaProducer(bootstrap_servers='broker:9092')
+            producer = KafkaProducer(bootstrap_servers=KAFKA_URL)
             break
         except:
             print("Connection to the Kafka failed, retrying in 5 seconds")

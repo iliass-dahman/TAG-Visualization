@@ -1,6 +1,6 @@
 import requests
 
-from config import endpoint
+from consumer_config import endpoint
 from model import Validation
 
 

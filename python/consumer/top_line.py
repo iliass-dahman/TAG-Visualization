@@ -2,6 +2,9 @@ from cassandra.cluster import Cluster
 import pandas as pd
 
 import warnings
+
+from python.consumer.consumer_config import CASSANDRA_SERVICE_NAME, CASSANDRA_PORT
+
 warnings.filterwarnings('ignore')
 
 
@@ -58,7 +61,7 @@ if __name__ == "__main__":
     while True:
         try:
             print("Connecting to the Cluster..........")
-            cluster = Cluster(["cassandra"],port=9042)
+            cluster = Cluster([CASSANDRA_SERVICE_NAME],port=CASSANDRA_PORT)
             session = cluster.connect('test')
             break
         except:

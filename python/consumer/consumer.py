@@ -102,7 +102,7 @@ if __name__ == "__main__":
     while True:
         try:
             print("Connecting to the Cluster..........")
-            cluster = Cluster(["cassandra"],port=9042)
+            cluster = Cluster([CASSANDRA_SERVICE_NAME],port=CASSANDRA_PORT)
             session = cluster.connect('test')
             break
         except:
@@ -115,7 +115,7 @@ if __name__ == "__main__":
     consumer = None
     while True:
         try:
-            consumer = KafkaConsumer(bootstrap_servers='broker:9092')
+            consumer = KafkaConsumer(bootstrap_servers=KAFKA_URL)
             break
         except:
             print("Connection to the kafka cluster failed, retrying in 5 seconds")
