@@ -19,6 +19,7 @@ services:
     depends_on:
       - broker
       - cassandra
+      - sample-data
 
   app:
     tty: true

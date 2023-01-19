@@ -14,7 +14,14 @@ route = APIRouter()
 def consume_subs():
 
     #les nouveaux adhérents
-    c=Consumer({'bootstrap.servers':config.kafka_url,'group.id':'python-consumer','auto.offset.reset':'earliest'})
+    #while true try to create consumer
+    while True:
+        try:
+            c=Consumer({'bootstrap.servers':config.kafka_url,'group.id':'python-consumer','auto.offset.reset':'earliest'})
+            break
+        except:
+            print("Error while creating consumer")
+            time.sleep(5)
     print('Les nouveaux adhérents--------------')
     #c.subscribe(['new_subs'])
     running = True
@@ -45,7 +52,13 @@ def consume_subs():
 def consume_trams():
 
     #les nouveaux adhérents
-    c=Consumer({'bootstrap.servers':config.kafka_url,'group.id':'python-consumer','auto.offset.reset':'earliest'})
+    while True:
+        try:
+            c=Consumer({'bootstrap.servers':config.kafka_url,'group.id':'python-consumer','auto.offset.reset':'earliest'})
+            break
+        except:
+            print("Error while creating consumer")
+            time.sleep(5)
     try:
         print('Les lignes les plus fréquentées--------------')
         running = True

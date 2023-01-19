@@ -53,13 +53,17 @@ def top_line_user(session):
 
 if __name__ == "__main__":
     
-    print("Connecting to the Cluster..........")
-    #connect to the cluster
-    cluster = Cluster(["cassandra"],port=9042)
-
-
-    #connect to the keyspace
-    session = cluster.connect('test')
+    cluster = None
+    session = None
+    while True:
+        try:
+            print("Connecting to the Cluster..........")
+            cluster = Cluster(["cassandra"],port=9042)
+            session = cluster.connect('test')
+            break
+        except:
+            print("Connection to the cluster failed, retrying in 5 seconds")
+            time.sleep(5)
 
     print("generating top line statistics.........")
 
