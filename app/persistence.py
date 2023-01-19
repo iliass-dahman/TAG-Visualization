@@ -23,6 +23,8 @@ def setup_db():
 
 def save_to_db(table, data):
 
+    
+
     if table == 'new_subs':
         day=datetime.strptime(data['day'] , "%Y-%m-%d")
         NewSubs.create(

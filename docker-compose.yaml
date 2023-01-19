@@ -37,6 +37,13 @@ services:
       kompose.service.expose: "tagawsome.com"
       kompose.service.expose.tls-secret: "atay-secret"
       kompose.service.expose.ingress-class-name: "nginx"
+    environment:
+        BROKER_NAME: 'broker'
+        BROKER_PORT: 9092
+        BROKER_SUBSCRIPTION_TOPIC: 'new_subs'
+        BROKER_USAGE_TOPIC: 'frequented_tram'
+        CASSANDRA_URL: 'cassandra'
+        CASSANDRA_KEYSPACE: 'test'
 
   cassandra:
     tty: true
