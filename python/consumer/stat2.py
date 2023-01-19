@@ -3,7 +3,7 @@ import pandas as pd
 import math
 import warnings
 
-from python.consumer.consumer_config import KAFKA_URL, CASSANDRA_SERVICE_NAME, CASSANDRA_PORT
+from consumer_config import CASSANDRA_SERVICE_NAME, CASSANDRA_PORT, CASSANDRA_KEYSPACE, KAFKA_URL
 
 warnings.filterwarnings('ignore')
 
@@ -645,7 +645,7 @@ if __name__ == "__main__":
             print("Connection to the cluster failed, retrying in 5 seconds")
             time.sleep(5)
 
-    session = cluster.connect('test')
+    session = cluster.connect(CASSANDRA_KEYSPACE)
     producer = None
     while True:
         try:

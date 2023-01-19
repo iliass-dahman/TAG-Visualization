@@ -3,7 +3,7 @@ import pandas as pd
 
 import warnings
 
-from python.consumer.consumer_config import CASSANDRA_SERVICE_NAME, CASSANDRA_PORT
+from consumer_config import CASSANDRA_SERVICE_NAME, CASSANDRA_PORT, CASSANDRA_KEYSPACE
 
 warnings.filterwarnings('ignore')
 
@@ -62,7 +62,7 @@ if __name__ == "__main__":
         try:
             print("Connecting to the Cluster..........")
             cluster = Cluster([CASSANDRA_SERVICE_NAME],port=CASSANDRA_PORT)
-            session = cluster.connect('test')
+            session = cluster.connect(CASSANDRA_KEYSPACE)
             break
         except:
             print("Connection to the cluster failed, retrying in 5 seconds")

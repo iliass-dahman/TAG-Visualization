@@ -11,8 +11,7 @@ from cassandra.cluster import Cluster
 import pandas as pd
 import numpy as np
 
-
-
+from consumer_config import CASSANDRA_SERVICE_NAME, CASSANDRA_PORT, CASSANDRA_KEYSPACE, KAFKA_URL
 
 
 # function which checks whether it's a new client or not
@@ -103,7 +102,7 @@ if __name__ == "__main__":
         try:
             print("Connecting to the Cluster..........")
             cluster = Cluster([CASSANDRA_SERVICE_NAME],port=CASSANDRA_PORT)
-            session = cluster.connect('test')
+            session = cluster.connect(CASSANDRA_KEYSPACE)
             break
         except:
             print("Connection to the cluster failed, retrying in 5 seconds")
