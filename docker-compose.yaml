@@ -24,6 +24,14 @@ services:
       - broker
       - cassandra
       - sample-data
+    environment:
+      BROKER_NAME: 'broker'
+      BROKER_PORT: 9092
+      BROKER_SUBSCRIPTION_TOPIC: 'new_subs'
+      BROKER_USAGE_TOPIC: 'frequented_tram'
+      CASSANDRA_PORT: 9042
+      CASSANDRA_URL: 'cassandra'
+      CASSANDRA_KEYSPACE: 'test'
 
   app:
     tty: true
