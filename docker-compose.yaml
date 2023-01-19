@@ -9,6 +9,10 @@ services:
     container_name: producer
     depends_on:
       - broker
+    environment:
+      KAFKA_BROKER: broker
+      KAFKA_TOPIC: temp
+      KAFKA_PORT: 9092
 
   consumer:
     tty: true
