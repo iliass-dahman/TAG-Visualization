@@ -11,7 +11,8 @@ while True:
     try:
         print("Connecting to the Kafka..........")
         producer = KafkaProducer(bootstrap_servers=BROKER_URL)
-        break
+        if producer.bootstrap_connected() is True:
+            break
     except:
         sleep(1)
         print("Connection to the Kafka failed, retrying in 5 seconds")
