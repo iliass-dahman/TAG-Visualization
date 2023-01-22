@@ -30,7 +30,7 @@ spec:
             - ./run_consumer.sh
           env:
             - name: BROKER_NAME
-              value: broker.default.svc.cluster.local
+              value: my-release-kafka.default.svc.cluster.local
             - name: BROKER_PORT
               value: "9092"
             - name: BROKER_SUBSCRIPTION_TOPIC
