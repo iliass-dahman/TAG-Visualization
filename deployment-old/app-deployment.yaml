@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yaml -o deployment/ --build local --push-image=True -v
+    kompose.service.expose: tagawsome.com
+    kompose.service.expose.ingress-class-name: nginx
+    kompose.service.expose.tls-secret: atay-secret
+    kompose.service.type: LoadBalancer
+    kompose.version: 1.27.0 (b0ed6a2c9)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: app
+  name: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: app
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yaml -o deployment/ --build local --push-image=True -v
+        kompose.service.expose: tagawsome.com
+        kompose.service.expose.ingress-class-name: nginx
+        kompose.service.expose.tls-secret: atay-secret
+        kompose.service.type: LoadBalancer
+        kompose.version: 1.27.0 (b0ed6a2c9)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: app
+    spec:
+      containers:
+        - args:
+            - sh
+            - -c
+            - sleep 130; python service.py
+          env:
+            - name: BROKER_NAME
+              value: my-release-kafka.default.svc.cluster.local
+            - name: BROKER_PORT
+              value: "9092"
+            - name: BROKER_SUBSCRIPTION_TOPIC
+              value: new_subs
+            - name: BROKER_USAGE_TOPIC
+              value: frequented_tram
+            - name: CASSANDRA_KEYSPACE
+              value: test
+            - name: CASSANDRA_URL
+              value: cassandra.default.svc.cluster.local
+          image: yeyloo/app-sdtd
+          name: app
+          ports:
+            - containerPort: 8000
+          resources: {}
+          tty: true
+      restartPolicy: Always
+status: {}

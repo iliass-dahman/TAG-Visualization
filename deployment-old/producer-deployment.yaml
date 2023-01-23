@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yaml -o deployment/ --build local --push-image=True -v
+    kompose.version: 1.27.0 (b0ed6a2c9)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: producer
+  name: producer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: producer
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yaml -o deployment/ --build local --push-image=True -v
+        kompose.version: 1.27.0 (b0ed6a2c9)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: producer
+    spec:
+      containers:
+        - args:
+            - sh
+            - -c
+            - ./run_producer.sh
+          env:
+            - name: BROKER_NAME
+              value: my-release-kafka-0.my-release-kafka-headless.default.svc.cluster.local
+            - name: BROKER_PORT
+              value: "9092"
+            - name: KAFKA_VALIDATION_TOPIC
+              value: temp
+            - name: SECURITY_PROTOCOL
+              value: SASL_SSL
+          image: yeyloo/producer-sdtd
+          name: producer
+          resources: {}
+          tty: true
+      restartPolicy: Always
+status: {}
