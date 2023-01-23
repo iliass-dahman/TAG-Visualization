@@ -95,7 +95,8 @@ if __name__ == "__main__":
     while True:
         try:
             print("Connecting to the Cluster..........")
-            cluster = Cluster([CASSANDRA_SERVICE_NAME], port=CASSANDRA_PORT)
+            auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandra')
+            cluster = Cluster([CASSANDRA_SERVICE_NAME], port=CASSANDRA_PORT,auth_provider=auth_provider)
             session = cluster.connect(CASSANDRA_KEYSPACE)
             break
         except:
