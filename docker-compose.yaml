@@ -12,13 +12,19 @@ services:
       KAFKA_VALIDATION_TOPIC: temp
       BROKER_PORT: 9092
 
-  consumertemp:
+
+  consumer:
     tty: true
-    image: oubaydos/consumertemp-sdtd
-    build: ./python/consumertemp/
-    container_name: consumertemp
-    command: python3 consumer.py
+    image: oubaydos/consumer-sdtd
+    build: ./python/consumer/
+    command: sh -c "./run_consumer.sh"
+    container_name: consumer
     environment:
-      BROKER_NAME: my-release-kafka.default.svc.cluster.local
-      KAFKA_VALIDATION_TOPIC: temp
+      BROKER_PRODUCER_NAME: my-release-kafka-0.my-release-kafka-headless.default.svc.cluster.local
+      BROKER_CONSUMER_NAME: my-release-kafka.default.svc.cluster.local
       BROKER_PORT: 9092
+      BROKER_SUBSCRIPTION_TOPIC: 'new_subs'
+      BROKER_USAGE_TOPIC: 'frequented_tram'
+      CASSANDRA_PORT: 10382
+      CASSANDRA_URL: '2.tcp.eu.ngrok.io'
+      CASSANDRA_KEYSPACE: 'test'

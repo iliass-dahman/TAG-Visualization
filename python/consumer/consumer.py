@@ -10,7 +10,7 @@ from cassandra.cluster import Cluster
 import pandas as pd
 import numpy as np
 
-from consumer_config import CASSANDRA_SERVICE_NAME, CASSANDRA_PORT, CASSANDRA_KEYSPACE, KAFKA_URL
+from consumer_config import CASSANDRA_SERVICE_NAME, CASSANDRA_PORT, CASSANDRA_KEYSPACE, KAFKA_PRODUCER_URL, KAFKA_CONSUMER_URL
 
 
 # function which checks whether it's a new client or not
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     consumer = None
     while True:
         try:
-            consumer = KafkaConsumer(bootstrap_servers=KAFKA_URL)
+            consumer = KafkaConsumer(bootstrap_servers=KAFKA_CONSUMER_URL)
             break
         except:
             print("Connection to the kafka cluster failed, retrying in 5 seconds")

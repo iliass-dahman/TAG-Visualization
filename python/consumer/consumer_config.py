@@ -1,6 +1,7 @@
 import os
 
-KAFKA_URL = os.getenv('BROKER_NAME') + ":" + os.getenv('BROKER_PORT')
+KAFKA_PRODUCER_URL = os.getenv('BROKER_PRODUCER_NAME') + ":" + os.getenv('BROKER_PORT')
+KAFKA_CONSUMER_URL = os.getenv('BROKER_CONSUMER_NAME') + ":" + os.getenv('BROKER_PORT')
 KAFKA_SUBS_TOPIC = os.getenv('BROKER_SUBSCRIPTION_TOPIC')
 KAFKA_USAGE_TOPIC = os.getenv('BROKER_USAGE_TOPIC')
 CASSANDRA_SERVICE_NAME = os.getenv('CASSANDRA_URL')

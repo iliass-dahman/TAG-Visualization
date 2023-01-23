@@ -3,7 +3,7 @@ import pandas as pd
 import math
 import warnings
 
-from consumer_config import KAFKA_URL, CASSANDRA_PORT, CASSANDRA_SERVICE_NAME, CASSANDRA_KEYSPACE
+from consumer_config import KAFKA_PRODUCER_URL, CASSANDRA_PORT, CASSANDRA_SERVICE_NAME, CASSANDRA_KEYSPACE
 
 warnings.filterwarnings('ignore')
 
@@ -269,7 +269,7 @@ if __name__ == "__main__":
     while True:
         try:
             print("Connecting to the Kafka..........")
-            producer = KafkaProducer(bootstrap_servers=KAFKA_URL)
+            producer = KafkaProducer(bootstrap_servers=KAFKA_PRODUCER_URL)
             break
         except:
             print("Connection to the Kafka failed, retrying in 5 seconds")
