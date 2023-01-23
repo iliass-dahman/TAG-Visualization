@@ -3,7 +3,7 @@ from time import sleep
 
 from kafka import KafkaConsumer
 
-from consumer_config import BROKER_URL
+from consumer_config import BROKER_URL, KAFKA_VALIDATION_TOPIC
 from model import Validation
 
 while True:

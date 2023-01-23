@@ -7,104 +7,18 @@ services:
     build: ./python/producer/
     command: sh -c "./run_producer.sh"
     container_name: producer
-    depends_on:
-      - broker
     environment:
-      BROKER_NAME: broker.default.svc.cluster.local
+      BROKER_NAME: my-release-kafka-0.my-release-kafka-headless.default.svc.cluster.local
       KAFKA_VALIDATION_TOPIC: temp
       BROKER_PORT: 9092
 
-  consumer:
+  consumertemp:
     tty: true
-    image: yeyloo/consumer-sdtd
-    build: ./python/consumer/
-    command: sh -c "./run_consumer.sh"
-    container_name: consumer
-    depends_on:
-      - broker
-      - cassandra
-      - sample-data
+    image: oubaydos/consumertemp-sdtd
+    build: ./python/consumertemp/
+    container_name: consumertemp
+    command: python3 consumer.py
     environment:
-      BROKER_NAME: 'broker.default.svc.cluster.local'
+      BROKER_NAME: my-release-kafka.default.svc.cluster.local
+      KAFKA_VALIDATION_TOPIC: temp
       BROKER_PORT: 9092
-      BROKER_SUBSCRIPTION_TOPIC: 'new_subs'
-      BROKER_USAGE_TOPIC: 'frequented_tram'
-      CASSANDRA_PORT: 9042
-      CASSANDRA_URL: 'cassandra.default.svc.cluster.local'
-      CASSANDRA_KEYSPACE: 'test'
-
-  app:
-    tty: true
-    image: yeyloo/app-sdtd
-    build: ./app/
-    command: sh -c "sleep 130; python service.py"
-    container_name: app
-    ports:
-      - "8000:8000"
-    depends_on:
-      - broker
-      - cassandra
-    labels:
-      kompose.service.type: LoadBalancer
-      kompose.service.expose: "tagawsome.com"
-      kompose.service.expose.tls-secret: "atay-secret"
-      kompose.service.expose.ingress-class-name: "nginx"
-    environment:
-      BROKER_NAME: 'broker.default.svc.cluster.local'
-      BROKER_PORT: 9092
-      BROKER_SUBSCRIPTION_TOPIC: 'new_subs'
-      BROKER_USAGE_TOPIC: 'frequented_tram'
-      CASSANDRA_URL: 'cassandra.default.svc.cluster.local'
-      CASSANDRA_KEYSPACE: 'test'
-
-  cassandra:
-    tty: true
-    image: yeyloo/cassandra-sdtd
-    build: ./cassandra/
-    container_name: cassandra
-    ports:
-      - "9042:9042"
-    volumes:
-      - /var/lib/cassandra
-
-  # sample-data:
-  #   tty: true
-  #   image: yeyloo/sample-data-sdtd
-  #   build: ./Script/
-  #   container_name: sample-data
-  #   depends_on:
-  #     - cassandra
-  #   restart: "no"
-  #   command:  sh -c "~/script.sh"
-  #    entrypoint: ["/script.sh"]
-  #    volumes:
-  #      - ./script.sh:/script.sh
-
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.0.1
-    container_name: zookeeper
-    ports:
-      - "2181:2181"
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-
-  broker:
-    image: confluentinc/cp-kafka:7.0.1
-    container_name: broker
-    ports:
-      # To learn about configuring Kafka for access across networks see
-      # https://www.confluent.io/blog/kafka-client-cannot-connect-to-broker-on-aws-on-docker-etc/
-      - "9092:9092"
-    depends_on:
-      - zookeeper
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper.default.svc.cluster.local:2181'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_PLAINTEXT:PLAINTEXT,EXTERNAL_PLAINTEXT:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: EXTERNAL_PLAINTEXT://broker.default.svc.cluster.local:9092,INTERNAL_PLAINTEXT://broker.default.svc.cluster.local:29092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_LISTENERS: "INTERNAL_PLAINTEXT://0.0.0.0:9092,EXTERNAL_PLAINTEXT://0.0.0.0:29092"
-      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL_PLAINTEXT
