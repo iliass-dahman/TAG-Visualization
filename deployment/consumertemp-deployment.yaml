@@ -32,16 +32,8 @@ spec:
               value: my-release-kafka.default.svc.cluster.local
             - name: BROKER_PORT
               value: "9092"
-            - name: BROKER_SUBSCRIPTION_TOPIC
-              value: new_subs
-            - name: BROKER_USAGE_TOPIC
-              value: frequented_tram
-            - name: CASSANDRA_KEYSPACE
-              value: test
-            - name: CASSANDRA_PORT
-              value: "9042"
-            - name: CASSANDRA_URL
-              value: cassandra.default.svc.cluster.local
+            - name: KAFKA_VALIDATION_TOPIC
+              value: temp
           image: oubaydos/consumertemp-sdtd
           name: consumertemp
           resources: {}

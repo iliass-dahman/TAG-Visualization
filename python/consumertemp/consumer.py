@@ -10,6 +10,7 @@ while True:
     try:
         consumer = KafkaConsumer(
             bootstrap_servers=BROKER_URL, auto_offset_reset='earliest')
+        break
     except:
         print("waiting for 5s")
         sleep(5)
