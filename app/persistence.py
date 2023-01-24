@@ -1,5 +1,8 @@
 import ast
-from cassandra.cqlengine import connection
+
+from cassandra.auth import PlainTextAuthProvider
+from cassandra.cluster import Cluster
+# from cassandra.cqlengine import connection
 from cassandra.cqlengine.management import sync_table
 from models import NewSubs, Trajet, Station
 from datetime import datetime, timedelta
@@ -10,38 +13,40 @@ import time
 def setup_db():
     while True:
         try:
-            connection.setup([config.cassandra_url], config.cassandra_keyspace, protocol_version=3)
-            sync_table(NewSubs)
-            sync_table(Trajet)
-            sync_table(Station)
+            auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandra')
+            cluster = Cluster([config.CASSANDRA_SERVICE_NAME], port=config.CASSANDRA_PORT, auth_provider=auth_provider)
+            connection = cluster.connect(config.CASSANDRA_KEYSPACE)
+
+            # connection.setup([config.cassandra_url], config.cassandra_keyspace, protocol_version=3)
+            sync_table(NewSubs, connections=[connection])
+            sync_table(Trajet, connections=[connection])
+            sync_table(Station, connections=[connection])
             break
         except Exception as e:
             print(e)
             print("Waiting for Cassandra to start...")
             time.sleep(5)
-    
+
 
 def save_to_db(table, data):
-
-    
-
     if table == 'new_subs':
-        day=datetime.strptime(data['day'] , "%Y-%m-%d")
+        day = datetime.strptime(data['day'], "%Y-%m-%d")
         NewSubs.create(
             date=datetime.strptime(day.strftime("%m/%d/%Y"), "%m/%d/%Y"),
             number=int(data['new_subscribers'][0]['number']),
             monthly=int(data['new_subscribers'][0]['monthly']),
             year=int(data['new_subscribers'][0]['year'])
         ).save()
+
     elif table == 'frequented_tram':
-        date=datetime.strptime(data['day'] , "%Y-%m-%d")
+        date = datetime.strptime(data['day'], "%Y-%m-%d")
         shortDate = datetime.strptime(date.strftime("%m/%d/%Y"), "%m/%d/%Y")
 
         dataTramA = ast.literal_eval(data['tram_A'][0])
         dataTramB = ast.literal_eval(data['tram_B'][0])
         dataTramC = ast.literal_eval(data['tram_C'][0])
 
-        #extracting and storing the trajectory
+        # extracting and storing the trajectory
 
         Trajet.create(
             day=shortDate,
@@ -67,7 +72,7 @@ def save_to_db(table, data):
             users=int(dataTramC['users'])
         ).save()
 
-        #extracting and storing the stations
+        # extracting and storing the stations
 
         for prop, value in dataTramA.items():
             if prop != 'users':
@@ -98,7 +103,6 @@ def save_to_db(table, data):
                     name=prop,
                     users=int(value)
                 ).save()
-            
 
 
 def load_new_subs():
@@ -114,7 +118,7 @@ def load_new_subs():
         result = NewSubs.objects.allow_filtering().filter(
             date=datetime.strptime(day.strftime("%m/%d/%Y %I:%M %p"), "%m/%d/%Y %I:%M %p"))
         if result:
-            #get the max and update all the records to read
+            # get the max and update all the records to read
             max = 0
             maxRecordMonthly = 0
             maxRecordYearly = 0
@@ -132,9 +136,10 @@ def load_new_subs():
             monthlyUsers.append(0)
             yearlyUsers.append(0)
 
-    return { 'axis': days, 'monthlyUsers': monthlyUsers, 'yearlyUsers': yearlyUsers }
+    return {'axis': days, 'monthlyUsers': monthlyUsers, 'yearlyUsers': yearlyUsers}
 
-def load_new_subs_now() :
+
+def load_new_subs_now():
     today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
     hour = datetime.now().strftime("%H:%M:%S")
     monthlyUsers = 0
@@ -143,7 +148,7 @@ def load_new_subs_now() :
     result = NewSubs.objects.allow_filtering().filter(
         date=datetime.strptime(today.strftime("%m/%d/%Y %I:%M %p"), "%m/%d/%Y %I:%M %p"),
         read=False)
-    
+
     max = 0
     maxRecordMonthly = 0
     maxRecordYearly = 0
@@ -154,11 +159,11 @@ def load_new_subs_now() :
             maxRecordYearly = record.year
         record.read = True
         record.save()
-    
+
     monthlyUsers = maxRecordMonthly
     yearlyUsers = maxRecordYearly
-        
-    return { 'axis': hour, 'monthlyUsers': monthlyUsers, 'yearlyUsers': yearlyUsers }
+
+    return {'axis': hour, 'monthlyUsers': monthlyUsers, 'yearlyUsers': yearlyUsers}
 
 
 def load_trajets_usage():
@@ -179,7 +184,7 @@ def load_trajets_usage():
             tramA.append(max([x.users for x in result]))
         else:
             tramA.append(0)
-    
+
     for i in range(0, 10):
         day = startDate + timedelta(days=i)
         result = Trajet.objects.allow_filtering().filter(
@@ -189,7 +194,7 @@ def load_trajets_usage():
             tramB.append(max([x.users for x in result]))
         else:
             tramB.append(0)
-    
+
     for i in range(0, 10):
         day = startDate + timedelta(days=i)
         result = Trajet.objects.allow_filtering().filter(
@@ -200,7 +205,7 @@ def load_trajets_usage():
         else:
             tramC.append(0)
 
-    return { 'axis': days, 'tramA': tramA, 'tramB': tramB, 'tramC': tramC }
+    return {'axis': days, 'tramA': tramA, 'tramB': tramB, 'tramC': tramC}
 
 
 def load_trajets_usage_now():
@@ -223,8 +228,8 @@ def load_trajets_usage_now():
             tramC = record.users
         record.read = True
         record.save()
-    
-    return { 'axis': hour, 'tramA': tramA, 'tramB': tramB, 'tramC': tramC }
+
+    return {'axis': hour, 'tramA': tramA, 'tramB': tramB, 'tramC': tramC}
 
 
 def load_stations():
@@ -234,6 +239,7 @@ def load_stations():
         if station.name not in stationNames:
             stationNames.append(station.name)
     return stationNames
+
 
 def load_station_usage(stationName):
     today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
@@ -246,25 +252,26 @@ def load_station_usage(stationName):
         days.append(day.strftime("%m/%d/%Y"))
         result = Station.objects.allow_filtering().filter(
             day=datetime.strptime(day.strftime("%m/%d/%Y %I:%M %p"), "%m/%d/%Y %I:%M %p"),
-            name = stationName
-            )
+            name=stationName
+        )
         if result:
             users.append(max([x.users for x in result]))
         else:
             users.append(0)
 
-    return { 'axis': days, 'users': users }
+    return {'axis': days, 'users': users}
+
 
 def load_station_usage_now(station):
     today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
     hour = datetime.now().strftime("%H:%M:%S")
     users = 0
-    
+
     result = Station.objects.allow_filtering().filter(
         day=datetime.strptime(today.strftime("%m/%d/%Y %I:%M %p"), "%m/%d/%Y %I:%M %p"),
         read=False,
         name=station
-        )
+    )
     if result:
         for record in result:
             if record.users > users:
@@ -272,6 +279,6 @@ def load_station_usage_now(station):
             record.read = True
             record.save()
     else:
-        users= 0
-    
-    return { 'axis': hour, 'users': users }
+        users = 0
+
+    return {'axis': hour, 'users': users}
