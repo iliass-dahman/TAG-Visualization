@@ -26,8 +26,8 @@ services:
       BROKER_PORT: 9092
       BROKER_SUBSCRIPTION_TOPIC: 'new_subs'
       BROKER_USAGE_TOPIC: 'frequented_tram'
-      CASSANDRA_PORT: 18907
-      CASSANDRA_URL: '6.tcp.eu.ngrok.io'
+      CASSANDRA_PORT: 80
+      CASSANDRA_URL: '34.155.73.137'
       CASSANDRA_KEYSPACE: 'test'
   app:
     tty: true
@@ -47,6 +47,6 @@ services:
       BROKER_PORT: 9092
       BROKER_SUBSCRIPTION_TOPIC: 'new_subs'
       BROKER_USAGE_TOPIC: 'frequented_tram'
-      CASSANDRA_URL: '6.tcp.eu.ngrok.io'
-      CASSANDRA_PORT: 18907
+      CASSANDRA_URL: '34.155.73.137'
+      CASSANDRA_PORT: 80
       CASSANDRA_KEYSPACE: 'test'
