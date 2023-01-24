@@ -4,6 +4,7 @@ import math
 import warnings
 
 from consumer_config import CASSANDRA_SERVICE_NAME, CASSANDRA_PORT, CASSANDRA_KEYSPACE, KAFKA_PRODUCER_URL
+from cassandra.auth import PlainTextAuthProvider
 
 warnings.filterwarnings('ignore')
 
@@ -638,7 +639,8 @@ if __name__ == "__main__":
     while True:
         try:
             print("Connecting to the Cluster..........")
-            cluster = Cluster([CASSANDRA_SERVICE_NAME],port=CASSANDRA_PORT)
+            auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandra')
+            cluster = Cluster([CASSANDRA_SERVICE_NAME], port=CASSANDRA_PORT,auth_provider=auth_provider)
             
             break
         except:

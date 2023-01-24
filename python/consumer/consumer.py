@@ -3,6 +3,7 @@ from time import sleep
 import time
 
 from kafka import KafkaConsumer
+from cassandra.auth import PlainTextAuthProvider
 
 from model import Validation
 
