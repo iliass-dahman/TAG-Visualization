@@ -45,6 +45,8 @@ spec:
               value: "10800"
             - name: CASSANDRA_URL
               value: 4.tcp.eu.ngrok.io
+            - name: KAFKA_VALIDATION_TOPIC
+              value: temp
           image: oubaydos/consumer-sdtd
           name: consumer
           resources: {}
