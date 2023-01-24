@@ -42,9 +42,9 @@ spec:
             - name: CASSANDRA_KEYSPACE
               value: test
             - name: CASSANDRA_PORT
-              value: "10382"
+              value: "10800"
             - name: CASSANDRA_URL
-              value: 2.tcp.eu.ngrok.io
+              value: 4.tcp.eu.ngrok.io
           image: oubaydos/consumer-sdtd
           name: consumer
           resources: {}
