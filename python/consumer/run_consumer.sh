@@ -1,4 +1,4 @@
-sleep 0s 
+sleep 60s
 python3 ./consumer.py &
 sleep 30s 
 python3 ./stat1.py &
