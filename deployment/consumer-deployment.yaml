@@ -42,9 +42,9 @@ spec:
             - name: CASSANDRA_KEYSPACE
               value: test
             - name: CASSANDRA_PORT
-              value: "18907"
+              value: "80"
             - name: CASSANDRA_URL
-              value: 6.tcp.eu.ngrok.io
+              value: 34.155.73.137
             - name: KAFKA_VALIDATION_TOPIC
               value: temp
           image: oubaydos/consumer-sdtd
