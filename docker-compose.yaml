@@ -22,6 +22,7 @@ services:
     environment:
       BROKER_PRODUCER_NAME: my-release-kafka-0.my-release-kafka-headless.default.svc.cluster.local
       BROKER_CONSUMER_NAME: my-release-kafka.default.svc.cluster.local
+      KAFKA_VALIDATION_TOPIC: temp
       BROKER_PORT: 9092
       BROKER_SUBSCRIPTION_TOPIC: 'new_subs'
       BROKER_USAGE_TOPIC: 'frequented_tram'

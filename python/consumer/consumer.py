@@ -11,22 +11,16 @@ from cassandra.cluster import Cluster
 import pandas as pd
 import numpy as np
 
-from consumer_config import CASSANDRA_SERVICE_NAME, CASSANDRA_PORT, CASSANDRA_KEYSPACE, KAFKA_PRODUCER_URL, KAFKA_CONSUMER_URL
+from consumer_config import CASSANDRA_SERVICE_NAME, CASSANDRA_PORT, CASSANDRA_KEYSPACE, KAFKA_PRODUCER_URL, \
+    KAFKA_CONSUMER_URL, KAFKA_VALIDATION_TOPIC
 
 
 # function which checks whether it's a new client or not
 def is_new_client(session, id_client):
     # check if the received id exists in clients table
-    user = None
-    while True:
-        try:
-            user = pd.DataFrame(list(session.execute(f"SELECT id_client FROM client where \
-            id_client = '{id_client}' allow filtering;")))
-            break
-        except:
-            print("Connection to the cluster failed, retrying in 5 seconds")
-            time.sleep(5)
 
+    user = pd.DataFrame(list(session.execute(f"SELECT id_client FROM client where \
+    id_client = '{id_client}' allow filtering;")))
     if (user.shape[0] == 0):
         return True
     else:
@@ -114,7 +108,7 @@ if __name__ == "__main__":
             print("Connection to the kafka cluster failed, retrying in 5 seconds")
             time.sleep(5)
 
-    consumer.subscribe(topics=["temp-topic"])
+    consumer.subscribe(topics=[KAFKA_VALIDATION_TOPIC])
 
     print("receiving data............")
     i = 1

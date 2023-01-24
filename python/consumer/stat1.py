@@ -121,8 +121,25 @@ def statistics_1(session, producer):
         else:
             dates = dates['date'].unique()
     else:
+
         dates = pd.DataFrame(list(session.execute(f"SELECT toDate(timestamp) as date\
-         FROM Event;")))['date'].unique()
+         FROM Event;")))
+        date_exists = False
+        while(date_exists == False):
+            if(len(dates.columns) >=0):
+                dates = pd.DataFrame(list(session.execute(f"SELECT toDate(timestamp) as date\
+                         FROM Event;")))['date'].unique()
+                date_exists = True
+            else:
+                print("Event table is empty\nretry fetching data...")
+                dates = pd.DataFrame(list(session.execute(f"SELECT toDate(timestamp) as date\
+                 FROM Event;")))
+
+
+
+
+
+
 
     dates.sort()
 
