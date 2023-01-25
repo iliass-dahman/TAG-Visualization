@@ -48,9 +48,9 @@ spec:
             - name: CASSANDRA_KEYSPACE
               value: test
             - name: CASSANDRA_PORT
-              value: "80"
+              value: "9042"
             - name: CASSANDRA_URL
-              value: 34.155.73.137
+              value: 34.163.244.37
           image: oubaydos/app-sdtd
           name: app
           ports:
