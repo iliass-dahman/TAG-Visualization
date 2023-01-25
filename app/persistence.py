@@ -8,16 +8,14 @@ from models import NewSubs, Trajet, Station
 from datetime import datetime, timedelta
 import config
 import time
+from cassandra.cqlengine import connection
 
 
 def setup_db():
     while True:
         try:
-            auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandra')
-            cluster = Cluster([config.CASSANDRA_SERVICE_NAME], port=config.CASSANDRA_PORT, auth_provider=auth_provider)
-            connection = cluster.connect(config.CASSANDRA_KEYSPACE)
 
-            # connection.setup([config.cassandra_url], config.cassandra_keyspace, protocol_version=3)
+            connection.setup([config.CASSANDRA_SERVICE_NAME], config.CASSANDRA_KEYSPACE, protocol_version=3)
             sync_table(NewSubs, connections=[connection])
             sync_table(Trajet, connections=[connection])
             sync_table(Station, connections=[connection])
