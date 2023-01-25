@@ -16,9 +16,9 @@ def setup_db():
         try:
 
             connection.setup([config.CASSANDRA_SERVICE_NAME], config.CASSANDRA_KEYSPACE, protocol_version=3)
-            sync_table(NewSubs, connections=[connection])
-            sync_table(Trajet, connections=[connection])
-            sync_table(Station, connections=[connection])
+            sync_table(NewSubs)
+            sync_table(Trajet)
+            sync_table(Station)
             break
         except Exception as e:
             print(e)
