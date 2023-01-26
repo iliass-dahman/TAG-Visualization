@@ -155,6 +155,7 @@ def load_new_subs_now():
             max = record.number
             maxRecordMonthly = record.monthly
             maxRecordYearly = record.year
+            continue
         record.read = True
         record.save()
 
@@ -220,10 +221,13 @@ def load_trajets_usage_now():
     for record in result:
         if record.tram == 'Tram A' and record.users > tramA:
             tramA = record.users
+            continue
         elif record.tram == 'Tram B' and record.users > tramB:
             tramB = record.users
+            continue
         elif record.tram == 'Tram C' and record.users > tramC:
             tramC = record.users
+            continue
         record.read = True
         record.save()
 
@@ -274,6 +278,7 @@ def load_station_usage_now(station):
         for record in result:
             if record.users > users:
                 users = record.users
+                continue
             record.read = True
             record.save()
     else:

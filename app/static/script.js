@@ -1,8 +1,12 @@
 
 // Variables
 
+var URL = "http://localhost:";
+var PORT = "8000";
+
 var liveTraj = false
 var liveStation = false
+var liveSubs = false
 
 const newSubsCanva = document.getElementById('new-subs').getContext('2d');
 const TrajCanva = document.getElementById('frequented-trams').getContext('2d');
@@ -71,7 +75,7 @@ function getNewSubs(live) {
         subsChart.destroy();
     }
     endpoint = "new-subs?type=" + (live ? "today" : "past days");
-    fetch('http://localhost:8000/' + endpoint)
+    fetch(URL+PORT+'/' + endpoint)
     .then(res => res.json())
     .then(data => {
         
@@ -92,7 +96,7 @@ function getTrajData(live) {
         trajChart.destroy();
     }
     endpoint = "trajets?type=" + (live ? "today" : "past days");
-    fetch('http://localhost:8000/' + endpoint)
+    fetch(URL+PORT+'/' + endpoint)
     .then(res => res.json())
     .then(data => {
         
@@ -114,7 +118,7 @@ function getStationData(live) {
     }
     station = selectedStation.value;
     endpoint = "stations?type=" + (live ? "today" : "past days") + "&station=" + station;
-    fetch('http://localhost:8000/' + endpoint)
+    fetch(URL+PORT+'/' + endpoint)
     .then(res => res.json())
     .then(data => {
         
@@ -139,7 +143,7 @@ function clear(){
 
 setInterval(() => {
     if (liveSubs) {
-        fetch('http://localhost:8000/new-subs?type=today')
+        fetch(URL+PORT+'/new-subs?type=today')
         .then(res => res.json())
         .then(data => {
             if (subsChart.data.labels.length > 10) {
@@ -160,7 +164,7 @@ setInterval(() => {
 
 setInterval(() => {
     if (liveTraj) {
-        fetch('http://localhost:8000/trajets?type=today')
+        fetch(URL+PORT+'/trajets?type=today')
         .then(res => res.json())
         .then(data => {
             if (trajChart.data.labels.length > 10) {
@@ -183,7 +187,7 @@ setInterval(() => {
 
 setInterval(() => {
     if (liveStation) {
-        fetch('http://localhost:8000/stations?type=today&station=' + selectedStation.value)
+        fetch(URL+PORT+'/stations?type=today&station=' + selectedStation.value)
         .then(res => res.json())
         .then(data => {
             if (stationChart.data.labels.length > 10) {
