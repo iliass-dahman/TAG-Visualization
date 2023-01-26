@@ -44,7 +44,7 @@ spec:
             - name: CASSANDRA_PORT
               value: "9042"
             - name: CASSANDRA_URL
-              value: 34.163.244.37
+              value: 34.155.58.127
             - name: KAFKA_VALIDATION_TOPIC
               value: temp
           image: oubaydos/consumer-sdtd
