@@ -1,6 +1,7 @@
 
 // Variables
 
+var liveSubs = false
 var liveTraj = false
 var liveStation = false
 
